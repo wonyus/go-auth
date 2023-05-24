@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wonyus/go-auth/controllers"
@@ -61,9 +62,17 @@ func getAlbumByID(c *gin.Context) {
 }
 
 func main() {
-
+	port := os.Getenv("PORT")
 	router := gin.Default()
-	router.Use(middleware.Logger())
+	// router.Use(middleware.Logger())
+
+	router.Use(gin.Logger())
+	router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.Static("/static", "static")
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	})
 
 	router.POST("/signup", controllers.Signup)
 	router.POST("/login", controllers.Login)
@@ -75,5 +84,5 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 	router.GET("/albums/:id", getAlbumByID)
-	router.Run("localhost:8080")
+	router.Run(":" + port)
 }
