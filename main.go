@@ -1,10 +1,12 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/wonyus/go-auth/controllers"
 	"github.com/wonyus/go-auth/initializers"
 	"github.com/wonyus/go-auth/middleware"
@@ -62,9 +64,16 @@ func getAlbumByID(c *gin.Context) {
 }
 
 func main() {
-	port := os.Getenv("PORT")
 	router := gin.Default()
 	// router.Use(middleware.Logger())
+
+	if gin.Mode() != gin.ReleaseMode {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalln("Error loading .env file")
+		}
+	}
+	port := os.Getenv("PORT")
 
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("templates/*.tmpl.html")
