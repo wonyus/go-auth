@@ -1,12 +1,9 @@
 package main
 
 import (
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/wonyus/go-auth/controllers"
 	"github.com/wonyus/go-auth/initializers"
 	"github.com/wonyus/go-auth/middleware"
@@ -65,12 +62,6 @@ func getAlbumByID(c *gin.Context) {
 
 func main() {
 	// router.Use(middleware.Logger())
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	port := os.Getenv("PORT")
-
 	router := gin.Default()
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "hello"})
@@ -86,5 +77,5 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 	router.GET("/albums/:id", getAlbumByID)
-	router.Run(":" + port)
+	router.Run()
 }
