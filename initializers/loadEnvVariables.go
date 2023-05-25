@@ -9,8 +9,8 @@ import (
 )
 
 func LoadEnvVariables() {
-	err := godotenv.Load()
-	fmt.Println(os.Getenv("PORT"))
+	err := godotenv.Load(".prod.env")
+	fmt.Println(os.Getenv("DB1"))
 	if err != nil {
 		log.Fatal("Error Loading .env file", err)
 	}
