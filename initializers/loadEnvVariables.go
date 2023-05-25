@@ -1,6 +1,7 @@
 package initializers
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -9,8 +10,8 @@ import (
 
 func LoadEnvVariables() {
 	err := godotenv.Load()
-	os.Getenv("PORT")
+	fmt.Println(os.Getenv("PORT"))
 	if err != nil {
-		log.Fatal("Error Loading .env file")
+		log.Fatal("Error Loading .env file", err)
 	}
 }
