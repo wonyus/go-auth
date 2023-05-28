@@ -9,9 +9,21 @@ import (
 )
 
 func LoadEnvVariables() {
-	err := godotenv.Load(".prod.env")
-	fmt.Println(os.Getenv("DB1"))
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error Loading .env file", err)
+		fmt.Println("Error loading .env file:", err)
+	}
+	appMode := os.Getenv("APP_MODE")
+
+	if appMode == "development" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file:", err)
+		}
+	} else {
+		err := godotenv.Load(".prod.env")
+		if err != nil {
+			log.Fatal("Error loading .env file:", err)
+		}
 	}
 }
