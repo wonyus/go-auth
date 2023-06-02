@@ -146,6 +146,28 @@ func Logout(c *gin.Context) {
 
 }
 
+func GetUser(c *gin.Context) {
+	tokenString, _ := c.Cookie("RefreshToken")
+
+	type MyCustomClaims struct {
+		Sub int64 `json:"sub"`
+		jwt.RegisteredClaims
+	}
+
+	token, err := jwt.ParseWithClaims(tokenString, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET")), nil
+	})
+
+	if claims, ok := token.Claims.(*MyCustomClaims); ok && token.Valid {
+		var user models.User
+		initializers.DB.First(&user, claims.Sub)
+
+		c.JSON(http.StatusOK, gin.H{"message": user})
+	} else {
+		fmt.Println(err)
+	}
+}
+
 func Refresh(c *gin.Context) {
 	user, err := utils.GetUserFromJWT(c)
 
