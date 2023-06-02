@@ -112,7 +112,7 @@ func Login(c *gin.Context) {
 	initializers.DB.Save(&user)
 
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("AccessToken", AccessTokenString, 5, "", "", false, true)
+	c.SetCookie("AccessToken", AccessTokenString, 900, "", "", false, true)
 	c.SetCookie("RefreshToken", RefreshTokenString, 3600*24, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": user})
