@@ -3,6 +3,7 @@ package utils
 import (
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -11,11 +12,22 @@ import (
 )
 
 func GetUserFromJWT(c *gin.Context) (models.User, error) {
-	tokenString, _ := c.Cookie("RefreshToken")
+	tokenString, err := c.Cookie("AccessToken")
+
 	var user models.User
 
+	if err != nil {
+		bearer := c.GetHeader("Authorization")
+		if len(bearer) > 0 {
+			tokenString = strings.Split(bearer, " ")[1]
+		} else {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return user, err
+		}
+	}
+
 	claims := jwt.MapClaims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+	_, err = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if err != nil {
