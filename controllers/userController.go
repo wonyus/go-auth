@@ -152,7 +152,7 @@ func GetUser(c *gin.Context) {
 
 	if err == nil {
 		bearer := c.GetHeader("Authorization")
-		tokenString = strings.Split(bearer, " ")[0]
+		tokenString = strings.Split(bearer, " ")[1]
 	}
 
 	type MyCustomClaims struct {
