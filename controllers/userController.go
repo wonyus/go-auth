@@ -148,9 +148,9 @@ func Logout(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	tokenString, err := c.Cookie("RefreshToken")
+	tokenString, err := c.Cookie("AccessToken")
 
-	if err == nil {
+	if err != nil {
 		bearer := c.GetHeader("Authorization")
 		tokenString = strings.Split(bearer, " ")[1]
 	}
