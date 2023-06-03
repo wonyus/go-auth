@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -147,7 +148,12 @@ func Logout(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	tokenString, _ := c.Cookie("RefreshToken")
+	tokenString, err := c.Cookie("RefreshToken")
+
+	if err == nil {
+		bearer := c.GetHeader("Authorization")
+		tokenString = strings.Split(bearer, " ")[0]
+	}
 
 	type MyCustomClaims struct {
 		Sub int64 `json:"sub"`
