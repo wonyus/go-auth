@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -51,6 +52,15 @@ func RequireAuth(c *gin.Context) {
 
 func CheckRefresh(c *gin.Context) {
 	refreshTokenString, err := c.Cookie("RefreshToken")
+
+	if err != nil {
+		bearer := c.GetHeader("Authorization")
+		if len(bearer) > 0 {
+			refreshTokenString = strings.Split(bearer, " ")[1]
+			err = nil
+		}
+	}
+
 	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return

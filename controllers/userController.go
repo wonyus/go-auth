@@ -24,7 +24,8 @@ func Signup(c *gin.Context) {
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to read body",
 		})
 
 		return
@@ -34,7 +35,8 @@ func Signup(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to hash password",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to hash password",
 		})
 
 		return
@@ -45,13 +47,17 @@ func Signup(c *gin.Context) {
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create user",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to create user",
 		})
 
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Signup success",
+	})
 }
 
 func Login(c *gin.Context) {
@@ -62,7 +68,8 @@ func Login(c *gin.Context) {
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to read body",
 		})
 
 		return
@@ -72,7 +79,8 @@ func Login(c *gin.Context) {
 
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid Username or Password",
+			"status": http.StatusBadRequest,
+			"error":  "Invalid Username or Password",
 		})
 
 		return
@@ -82,7 +90,8 @@ func Login(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid Username or Password",
+			"status": http.StatusBadRequest,
+			"error":  "Invalid Username or Password",
 		})
 
 		return
@@ -92,7 +101,8 @@ func Login(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create token",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to create token",
 		})
 
 		return
@@ -102,7 +112,8 @@ func Login(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create token",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to create token",
 		})
 
 		return
@@ -116,7 +127,11 @@ func Login(c *gin.Context) {
 	c.SetCookie("AccessToken", AccessTokenString, 900, "", "", false, true)
 	c.SetCookie("RefreshToken", RefreshTokenString, 3600*24, "", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"message": user})
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"data":    user,
+		"message": "success",
+	})
 }
 
 func Logout(c *gin.Context) {
@@ -140,7 +155,10 @@ func Logout(c *gin.Context) {
 
 		c.SetCookie("AccessToken", "", -1, "", "", false, true)
 		c.SetCookie("RefreshToken", "", -1, "", "", false, true)
-		c.JSON(http.StatusOK, gin.H{})
+		c.JSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"message": "success",
+		})
 	} else {
 		fmt.Println(err)
 	}
@@ -168,13 +186,22 @@ func GetUser(c *gin.Context) {
 		var user models.User
 		initializers.DB.First(&user, claims.Sub)
 
-		c.JSON(http.StatusOK, gin.H{"message": user})
+		c.JSON(http.StatusOK, gin.H{
+			"status":  http.StatusOK,
+			"data":    user,
+			"message": "success",
+		})
 	} else {
 		fmt.Println(err)
 	}
 }
 
 func Refresh(c *gin.Context) {
+	type TokenResponse struct {
+		AccessToken  string `json:"AccessToken"`
+		RefreshToken string `json:"RefreshToken"`
+	}
+
 	user, err := utils.GetUserFromJWT(c)
 
 	if err != nil {
@@ -185,7 +212,8 @@ func Refresh(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create token",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to create token",
 		})
 
 		return
@@ -195,7 +223,8 @@ func Refresh(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create token",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to create token",
 		})
 
 		return
@@ -207,7 +236,11 @@ func Refresh(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("AccessToken", AccessTokenString, 900, "", "", false, true)
 	c.SetCookie("RefreshToken", RefreshTokenString, 3600*24, "", "", false, true)
-	c.JSON(http.StatusOK, gin.H{"AccessToken": AccessTokenString, "RefreshToken": RefreshTokenString})
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"data":    TokenResponse{AccessToken: AccessTokenString, RefreshToken: RefreshTokenString},
+		"message": "success",
+	})
 }
 
 func ChangePassword(c *gin.Context) {
@@ -218,7 +251,8 @@ func ChangePassword(c *gin.Context) {
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to read body",
 		})
 
 		return
@@ -230,7 +264,8 @@ func ChangePassword(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid Password",
+			"status": http.StatusBadRequest,
+			"error":  "Invalid Password",
 		})
 
 		return
@@ -240,7 +275,8 @@ func ChangePassword(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to hash password",
+			"status": http.StatusBadRequest,
+			"error":  "Failed to hash password",
 		})
 
 		return
@@ -249,7 +285,9 @@ func ChangePassword(c *gin.Context) {
 	user.Password = string(hash)
 	initializers.DB.Save(&user)
 	c.JSON(http.StatusOK, gin.H{
-		"message": user,
+		"status":  http.StatusOK,
+		"data":    user,
+		"message": "success",
 	})
 }
 
@@ -257,6 +295,8 @@ func Validate(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": user,
+		"status":  http.StatusOK,
+		"data":    user,
+		"message": "success",
 	})
 }
