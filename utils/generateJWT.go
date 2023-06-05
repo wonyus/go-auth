@@ -21,6 +21,7 @@ func GenerateAccessToken(user models.User) (string, error) {
 	return accessTokenString, nil
 }
 
+// testt deploy
 func GenerateRefreshToken(user models.User) (string, error) {
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
