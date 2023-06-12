@@ -75,7 +75,11 @@ func Login(c *gin.Context) {
 		return
 	}
 	var user models.User
-	initializers.DB.First(&user, "Username = ?", body.Username)
+	if utils.ValidateEmail(body.Username) {
+		initializers.DB.First(&user, "Email = ?", body.Username)
+	} else {
+		initializers.DB.First(&user, "Username = ?", body.Username)
+	}
 
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
