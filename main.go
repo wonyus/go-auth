@@ -69,8 +69,8 @@ func main() {
 
 	router.POST("/signup", controllers.Signup)
 	router.POST("/login", controllers.Login)
-	router.GET("/logout", controllers.Logout)
-	router.GET("/user", controllers.GetUser)
+	router.GET("/logout", middleware.RequireAuth, controllers.Logout)
+	router.GET("/user", middleware.RequireAuth, controllers.GetUser)
 	router.POST("/validate", middleware.RequireAuth, controllers.Validate)
 	router.POST("/changepassword", middleware.RequireAuth, controllers.ChangePassword)
 	router.GET("/refresh", middleware.CheckRefresh, controllers.Refresh)
